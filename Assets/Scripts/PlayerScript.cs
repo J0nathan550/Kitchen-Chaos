@@ -28,5 +28,8 @@ public class PlayerScript : MonoBehaviour
 
         inputVector = inputVector.normalized; 
         transform.position += moveDir * Time.deltaTime * playerSpeed;
+
+        float rotateSpeed = 10f; 
+        transform.forward = Vector3.Slerp(transform.forward, moveDir, rotateSpeed * Time.deltaTime);
     }
 }
