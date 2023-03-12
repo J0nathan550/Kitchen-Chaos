@@ -3,10 +3,43 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private float playerSpeed = 7f;
-    [SerializeField] private PlayerInputScript input; 
+    [SerializeField] private PlayerInputScript input;
+    [SerializeField] private LayerMask counterLayerMask;
     private bool isWalking = false;
+    private Vector3 lastInteraction; 
 
     private void Update()
+    {
+        HandleMovement();
+        HandleInteractions();
+    }
+
+    public bool IsWalking()
+    {
+        return isWalking;
+    }
+
+    private void HandleInteractions()
+    {
+        Vector2 inputVector = input.GetMovementVectorNormalized();
+
+        Vector3 moveDir = new Vector3(inputVector.x, 0, inputVector.y);
+
+        if (moveDir != Vector3.zero)
+        {
+            lastInteraction = moveDir;
+        }
+
+        float interactDistance = 2f;
+        if(Physics.Raycast(transform.position, lastInteraction, out RaycastHit raycastHit, interactDistance, counterLayerMask))
+        {
+            raycastHit.transform.TryGetComponent(out ClearCounterScript clearCounter);
+            clearCounter.Interact();
+        }
+
+    }
+
+    private void HandleMovement()
     {
         Vector2 inputVector = input.GetMovementVectorNormalized();
 
@@ -14,10 +47,10 @@ public class PlayerScript : MonoBehaviour
 
         float playerHeight = 2f;
         float playerRadius = .7f;
-        float moveDistance = playerSpeed * Time.deltaTime;    
+        float moveDistance = playerSpeed * Time.deltaTime;
 
         bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDir, moveDistance);
-        if (!canMove) 
+        if (!canMove)
         {
             Vector3 moveDirX = new Vector3(moveDir.x, 0, 0).normalized;
             canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirX, moveDistance);
@@ -37,7 +70,7 @@ public class PlayerScript : MonoBehaviour
                 }
                 else
                 {
-                    return; 
+                    return;
                 }
             }
         }
@@ -46,15 +79,10 @@ public class PlayerScript : MonoBehaviour
             transform.position += moveDir * moveDistance;
         }
 
-        isWalking = moveDir != Vector3.zero;    
+        isWalking = moveDir != Vector3.zero;
 
-        float rotateSpeed = 10f; 
+        float rotateSpeed = 10f;
         transform.forward = Vector3.Slerp(transform.forward, moveDir, rotateSpeed * Time.deltaTime);
-    }
-
-    public bool IsWalking()
-    {
-        return isWalking;
     }
 
 }

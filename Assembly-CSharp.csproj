@@ -60,6 +60,7 @@
     <Compile Include="Assets\Scripts\PlayerAnimatorScript.cs" />
     <Compile Include="Assets\Scripts\PlayerInputScript.cs" />
     <Compile Include="Assets\PlayerInputActions.cs" />
+    <Compile Include="Assets\Scripts\ClearCounterScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
